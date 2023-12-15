@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="laser_enabled" default="false" />
+  <xacro:arg name="laser_xyz" default="$(optenv HUSKY_LMS1XX_XYZ 0.2206 0.0 0.00635)" />
+  <xacro:arg name="laser_rpy" default="$(optenv HUSKY_LMS1XX_RPY 0.0 0.0 0.0)" />
+
+  <xacro:arg name="realsense_enabled" default="true" />
+  <xacro:arg name="realsense_xyz" default="$(optenv HUSKY_REALSENSE_XYZ 0 0 0)" />
+  <xacro:arg name="realsense_rpy" default="$(optenv HUSKY_REALSENSE_RPY 0 0 0)" />
+  <xacro:arg name="realsense_mount" default="$(optenv HUSKY_REALSENSE_MOUNT_FRAME sensor_arch_mount_link)" />
+
+  <xacro:property name="onix_front_bumper_extend" value="$(optenv HUSKY_FRONT_BUMPER_EXTEND 0)" />
+  <xacro:property name="onix_rear_bumper_extend" value="$(optenv HUSKY_REAR_BUMPER_EXTEND 0)" />
+
+  <xacro:arg name="robot_namespace" default="/" />
+  <xacro:arg name="is_sim" default="false" />
+  <xacro:arg name="urdf_extras" default="empty.urdf" />
+
+  <!-- Included URDF/XACRO Files -->
+
+
+  <xacro:property name="M_PI" value="3.14159"/>
+
+  <xacro:macro name="onix" params="prefix">
+
+    <!-- Base Size -->
+    <xacro:property name="base_x_size" value="1.040000" />
+    <xacro:property name="base_y_size" value="0.800000" />
+    <xacro:property name="base_z_size" value="0.30000" />
+
+    <!-- Wheel Mounting Positions -->
+    <xacro:property name="wheelbase" value="0.700" />
+    <xacro:property name="track" value="0.00" />
+    <xacro:property name="wheel_vertical_offset" value="0.03282" />
+
+    <!-- Wheel Properties -->
+    <xacro:property name="wheel_length" value="0.07" />
+    <xacro:property name="wheel_radius" value="0.1" />
+
+    <!-- Base link is the center of the robot's bottom plate -->
+    <link name="${prefix}base_link">
+      <visual>
+        <origin xyz="-0.52 0.87 0.12" rpy="0 0 1.57" />
+        <geometry>
+          <mesh filename="file://$(find onix_description)/meshes/arima.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="yellow">
+          <color rgba="1 1 1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${base_z_size/4}" rpy="0 0 0" />
+        <geometry>
+          <box size="${ base_x_size} ${base_y_size} ${base_z_size/2}"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="0 0 ${base_z_size*3/4-0.01}" rpy="0 0 0" />
+        <geometry>
+          <box size="${base_x_size*4/5} ${base_y_size} ${base_z_size/2-0.02}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Base footprint is on the ground under the robot -->
+    <link name="${prefix}base_footprint"/>
+
+    <joint name="${prefix}base_footprint_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <parent link="${prefix}base_link" />
+      <child link="${prefix}base_footprint" />
+      
+    </joint>
+
+    <!-- Inertial link stores the robot's inertial information -->
+    <link name="${prefix}inertial_link">
+      <inertial>
+        <mass value="46.034" />
+        <origin xyz="-0.00065 -0.085 0.062" />
+        <inertia ixx="0.6022" ixy="-0.02364" ixz="-0.1197" iyy="1.7386" iyz="-0.001544" izz="2.0296" />
+      </inertial>
+    </link>
+
+    <joint name="${prefix}inertial_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <parent link="${prefix}base_link" />
+      <child link="${prefix}inertial_link" />
+    </joint>
+
+    <gazebo reference="${prefix}inertial_link">
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <material>
+        <color rgba="0.8 0.0 0.0 1.0"/>
+      </material>
+    </gazebo>
+  <!-- wheel for the robot -->
+    
+    <link name="${prefix}left_wheel">
+      <inertial>
+        <mass value="2.637" />
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
+        <inertia  ixx="0.02467" ixy="0" ixz="0" iyy="0.04411" iyz="0" izz="0.02467" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <!-- <mesh filename="file://$(find onix_description)/meshes/wheel.dae" /> -->
+          <cylinder length="${wheel_length}" radius="${wheel_radius}" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <cylinder length="${wheel_length}" radius="${wheel_radius}" />
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${prefix}left_wheel">
+      <mu1 value="1.0"/>
+      <mu2 value="0.5"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <fdir1 value="1 0 0"/>
+    </gazebo>
+
+    <joint name="${prefix}left_wheel_joint" type="continuous">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}left_wheel"/>
+      <origin xyz="0 0.35  0.1" rpy="0 0 0" />
+      <axis xyz="0 1 0" rpy="0 0 0" />
+    </joint>
+
+    <link name="${prefix}right_wheel">
+      <inertial>
+        <mass value="2.637" />
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
+        <inertia  ixx="0.02467" ixy="0" ixz="0" iyy="0.04411" iyz="0" izz="0.02467" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <!-- <mesh filename="file://$(find onix_description)/meshes/wheel.dae" /> -->
+          <cylinder length="${wheel_length}" radius="${wheel_radius}" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <cylinder length="${wheel_length}" radius="${wheel_radius}" />
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${prefix}right_wheel">
+      <mu1 value="1.0"/>
+      <mu2 value="0.5"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <fdir1 value="1 0 0"/>
+    </gazebo>
+
+    <joint name="${prefix}right_wheel_joint" type="continuous">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}right_wheel"/>
+      <origin xyz="0 -0.35  0.1" rpy="0 0 0" />
+      <axis xyz="0 1 0" rpy="0 0 0" />
+    </joint>
+
+  <!-- laser for the robot -->
+    <link name="${prefix}front_laser">
+
+      <collision>
+        <origin xyz="0 0 .0585" rpy="0 0 0" />
+        <geometry>
+          <box size=".1 .108 .117" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="front_laser_mount_joint" type="fixed">
+        <origin xyz="0.6 0.37 0.09" rpy="0 0 0" />
+        <parent link="${prefix}base_link" />
+        <child link="${prefix}front_laser" />
+    </joint>
+    
+    <gazebo reference="${prefix}front_laser">
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <material>
+        <color rgba="0.8 0.0 0.0 1.0"/>
+      </material>
+    </gazebo>
+
+    <link name="${prefix}rear_laser">
+
+      <collision>
+        <origin xyz="0 0 .0585" rpy="0 0 0" />
+        <geometry>
+          <box size=".1 .108 .117" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="rear_laser_mount_joint" type="fixed">
+        <origin xyz="-0.6 -0.37 0.09" rpy="0 0 3.14" />
+        <parent link="${prefix}base_link" />
+        <child link="${prefix}rear_laser" />
+    </joint>
+
+    <gazebo reference="${prefix}rear_laser">
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <material>
+        <color rgba="0.8 0.0 0.0 1.0"/>
+      </material>
+    </gazebo>
+
+  <!-- rear camera  -->
+    <link name="${prefix}rear_camera">
+      <collision>
+        <origin xyz="0 0 .0585" rpy="0 0 0" />
+        <geometry>
+          <box size=".1 .108 .117" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="rear_camera_mount_joint" type="fixed">
+        <origin xyz="-0.6 0 0.25" rpy="0 -1.57 0" />
+        <parent link="${prefix}base_link" />
+        <child link="${prefix}rear_camera" />
+    </joint> 
+
+    <gazebo reference="${prefix}rear_camera">
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <material>
+        <color rgba="0.8 0.0 0.0 1.0"/>
+      </material>
+    </gazebo> 
+
+    <!-- front intel realsense -->
+    <link name="${prefix}_realsense">
+      <collision>
+        <origin xyz="0 0 .0585" rpy="0 0 0" />
+        <geometry>
+          <box size=".1 .108 .117" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint type="fixed" name="${prefix}_realsense_lens_joint">
+      <origin xyz="0.6 0 0.2" rpy="0 0 0" />
+      <parent link="${prefix}base_link" />
+      <child link="${prefix}_realsense" />
+    </joint>
+
+    <gazebo reference="${prefix}_realsense">
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <material>
+        <color rgba="0.8 0.0 0.0 1.0"/>
+      </material>
+    </gazebo>
+ 
+    <!-- ros control -->
+    <ros2_control name="${prefix}onix_hardware" type="system">
+      <hardware>
+        <xacro:if value="$(arg is_sim)">
+          <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+         </xacro:if>
+        <xacro:unless value="$(arg is_sim)"> 
+          <plugin>onix_hardware/OnixHardware</plugin>
+          <plugin>fake_components/GenericSystem</plugin>
+          <param name="hw_start_duration_sec">2.0</param>
+          <param name="hw_stop_duration_sec">3.0</param>
+          <param name="wheel_diameter">0.2</param>
+          <param name="max_accel">5.0</param>
+          <param name="max_speed">23.0</param>
+          <param name="polling_timeout">10.0</param>
+          <param name="serial_port">/dev/ttyUSB0</param>
+        </xacro:unless>
+      </hardware>
+      <joint name="${prefix}left_wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+   
+      <joint name="${prefix}right_wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+     
+    </ros2_control> 
+
+  </xacro:macro>
+
+</robot>

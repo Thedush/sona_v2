@@ -1,0 +1,22 @@
+int8 slave_id
+int16 slave_address # indicate slave address for the modbus_device we can give register and coil address
+int8 quantity # Number of register to be read/write , Maximum 10
+
+# function code 
+# 0 : modbus_read_bits 
+# 1 : modbus_read_input_bits
+# 2 : modbus_read_registers
+# 3 : modbus_read_input_registers
+# 4 : modbus_write_bit
+# 5 : modbus_write_register
+# 6 : modbus_write_bits
+# 7 : modbus_write_registers
+# 8 : modbus_write_and_read_registers
+int8 function 
+int16[] write_data # most of the register will have 16bit registers, for single data write in 0th address
+
+---
+uint16[] read_data # return the data read for register or coil
+uint8[] read_coil
+bool success   # indicate successful run of triggered service
+string message # informational, e.g. for error messages

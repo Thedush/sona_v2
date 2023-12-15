@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/oem/follower_ws/install/plc_modbus_driver/include/**",
+        "/home/oem/follower_ws/install/onix_robot/include/**",
+        "/home/oem/follower_ws/install/onix_msgs/include/**",
+        "/home/oem/follower_ws/install/modbus_ros/include/**",
+        "/home/oem/follower_ws/install/modbus_driver/include/**",
+        "/home/oem/follower_ws/install/agv_srv/include/**",
+        "/home/oem/follower_ws/install/agv_rough/include/**",
+        "/home/oem/follower_ws/install/agv_follower/include/**",
+        "/opt/ros/foxy/include/**",
+        "/home/oem/follower_ws/src/Onix_ros2/agv_follower/include/**",
+        "/home/oem/follower_ws/src/Onix_ros2/agv_rough/include/**",
+        "/home/oem/follower_ws/src/Onix_ros2/onix_robot/include/**",
+        "/home/oem/follower_ws/src/Onix_ros2/plc_modbus_driver/include/**",
+        "/home/oem/follower_ws/src/Onix_ros2/tz/modbus_driver/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

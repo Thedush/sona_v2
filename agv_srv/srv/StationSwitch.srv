@@ -1,0 +1,5 @@
+int32 station # e.g. for hardware enabling / disabling
+bool data # e.g. for hardware enabling / disabling
+---
+bool status   # indicate successful run of triggered service
+string message # informational, e.g. for error messages

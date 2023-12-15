@@ -1,0 +1,21 @@
+image_width: 960
+image_height: 720
+camera_name: camera
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [383.0501617855328, 0.0, 325.924297077757, 0.0, 460.75199379856116, 279.6647898754948, 0.0, 0.0, 1.0]
+distortion_model: fisheye
+distortion_coefficients:
+  rows: 1
+  cols: 4
+  data: [-0.05211498227990798, -0.17947172236155606, 0.3003138039738446, 0.06131476330795854]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [383.0501617855328, 0.0, 325.924297077757, 0.0, 0.0, 460.75199379856116, 279.6647898754948, 0.0, 0.0, 0.0, 1.0, 0.0]
+  

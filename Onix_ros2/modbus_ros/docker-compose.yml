@@ -1,0 +1,10 @@
+version: '3'
+services:
+  m10_ros2:
+    image: modbus:1.0
+    privileged: true
+    command: bash 
+    volumes:
+      - /dev:/dev
+      - /home/agv/Documents/agv_ws:/root/modbus_ws/src
+    tty: true

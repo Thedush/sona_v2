@@ -1,0 +1,16 @@
+[Unit]
+Description = Ros base and teleop
+#After = network.target 
+
+
+[Service]
+Type = oneshot
+User = xcy
+ExecStart=/home/xcy/sona_ws/src/sona/start.sh
+ExecStop=/home/xcy/sona_ws/src/sona/stop.sh
+RemainAfterExit=yes
+#Restart = on-abort
+
+[Install]
+WantedBy=multi-user.target
+

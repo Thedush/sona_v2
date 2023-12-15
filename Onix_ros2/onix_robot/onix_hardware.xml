@@ -1,0 +1,9 @@
+<library path="onix_hardware">
+    <class name="onix_hardware/OnixHardware"
+           type="onix_hardware::OnixHardware"
+           base_class_type="hardware_interface::SystemInterface">
+      <description>
+        The ros2_control OnixHardware using a system hardware interface-type.
+      </description>
+    </class>
+  </library>
